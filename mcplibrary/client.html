@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MCP Chat Client</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    #chat { border: 1px solid #ccc; padding: 1rem; height: 400px; overflow-y: auto; background: #f9f9f9; }
+    .msg { margin: 0.5rem 0; }
+    .user { font-weight: bold; color: #1a73e8; }
+    .bot { color: #0f9d58; }
+  </style>
+</head>
+<body>
+
+  <h2>🧠 MCP Host (Gemini AI)</h2>
+  <div id="chat"></div>
+
+  <form id="chat-form">
+    <input type="text" id="prompt" placeholder="Ask something..." style="width: 80%;" required />
+    <button type="submit">Send</button>
+  </form>
+
+  <script>
+    const chatDiv = document.getElementById('chat');
+    const form = document.getElementById('chat-form');
+    const promptInput = document.getElementById('prompt');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const prompt = promptInput.value.trim();
+      if (!prompt) return;
+
+      // Show user's message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'msg user';
+      userMsg.textContent = 'You: ' + prompt;
+      chatDiv.appendChild(userMsg);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+
+      promptInput.value = '';
+
+      // Call server
+      try {
+        const res = await fetch('http://localhost:3000/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await res.json();
+
+        const botMsg = document.createElement('div');
+        botMsg.className = 'msg bot';
+        botMsg.textContent = 'Gemini: ' + (data.response.trim() || '[No response]');
+        chatDiv.appendChild(botMsg);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+      } catch (err) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'msg bot';
+        errorMsg.textContent = 'Error: ' + err.message;
+        chatDiv.appendChild(errorMsg);
+      }
+    });
+  </script>
+
+</body>
+</html>
