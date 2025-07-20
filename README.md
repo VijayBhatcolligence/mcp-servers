@@ -39,7 +39,7 @@ PORT=3000
 NODE_ENV=development
 ```
 
-## 4. Run the server
+## 4. Run the server and client.html is chatbot frontend code host gemini client code and use client.html frontend to chat
 ```shell
 node mcp-multi-tool-server.js
 ```
